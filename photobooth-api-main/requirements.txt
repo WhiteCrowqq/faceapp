@@ -1,0 +1,14 @@
+cv
+matplotlib
+gdown
+gradio
+insightface
+moviepy
+numpy
+opencv-python
+opencv-python-headless
+onnx
+gfpgan
+timm
+torch
+onnxruntime

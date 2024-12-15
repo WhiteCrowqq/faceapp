@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Swap Application</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+        }
+        h1 {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #2575fc;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #1a62d3;
+        }
+        video, img {
+            width: 100%;
+            margin-top: 15px;
+            border-radius: 10px;
+        }
+        #capture-btn {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Face Swap App</h1>
+        <form id="upload-form" action="/upload/" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="targetImage" class="form-label">Upload Target Image</label>
+                <input type="file" class="form-control" id="targetImage" name="targetImage">
+            </div>
+            <h5 class="text-center">OR</h5>
+            <div id="webcam-section">
+                <video id="video" autoplay muted playsinline></video>
+                <button type="button" class="btn btn-primary w-100" id="capture-btn">Capture Photo</button>
+                <img id="capture-preview" alt="Captured Image Preview" style="display: none;">
+                <input type="hidden" name="capturedImage" id="capturedImage">
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mt-3">Swap Face</button>
+        </form>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const captureBtn = document.getElementById('capture-btn');
+        const capturedImageInput = document.getElementById('capturedImage');
+        const capturePreview = document.getElementById('capture-preview');
+
+        // Access webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                video.srcObject = stream;
+            })
+            .catch((err) => {
+                console.error("Error accessing webcam: ", err);
+                document.getElementById('webcam-section').style.display = 'none';
+            });
+
+        // Capture photo
+        captureBtn.addEventListener('click', () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Convert canvas to data URL and store it in the hidden input
+            const dataURL = canvas.toDataURL('image/png');
+            capturedImageInput.value = dataURL;
+
+            // Display the captured image preview
+            capturePreview.src = dataURL;
+            capturePreview.style.display = 'block';
+        });
+    </script>
+</body>
+</html>

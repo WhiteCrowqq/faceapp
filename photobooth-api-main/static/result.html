@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Swap Result</title>
+    <style>
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        img {
+            max-width: 80%;
+            height: auto;
+        }
+        .qr-code {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Face Swap Result</h1>
+        <img src="{{ result_image_url }}" alt="Result Image">
+        <br>
+        <a href="{{ result_image_url }}" download>Download Image</a>
+        <div>
+            <h2>Scan QR Code to Download</h2>
+            <img class="qr-code" src="{{ qr_code_url }}" alt="QR Code">
+        </div>
+    </div>
+</body>
+</html>

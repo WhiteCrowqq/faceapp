@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Swap Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            margin: 20px auto;
+        }
+
+        input[type="file"] {
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #loading {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #result {
+            margin-top: 20px;
+            display: none;
+        }
+
+        #result img {
+            max-width: 90%;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #error {
+            color: red;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Face Swap Application</h1>
+    <p>Upload a target photo to see the swapped result!</p>
+
+    <form id="uploadForm">
+        <input type="file" id="targetImage" accept="image/*" required>
+        <button type="submit">Swap Face</button>
+    </form>
+
+    <div id="loading">Processing... Please wait for 10 seconds!</div>
+
+    <div id="result">
+        <h2>Swapped Image</h2>
+        <img id="resultImage" alt="Swapped result">
+        <p><a id="downloadLink" href="#" download>Download Swapped Image</a></p>
+    </div>
+
+    <div id="error"></div>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        const targetImageInput = document.getElementById('targetImage');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        const resultImage = document.getElementById('resultImage');
+        const downloadLink = document.getElementById('downloadLink');
+        const errorDiv = document.getElementById('error');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            // Reset previous states
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            errorDiv.textContent = '';
+
+            const formData = new FormData();
+            formData.append('targetImage', targetImageInput.files[0]);
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/swap-face/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                // Wait 10 seconds for processing
+                setTimeout(async () => {
+                    const blob = await response.blob();
+                    const imageUrl = URL.createObjectURL(blob);
+
+                    // Show the result image
+                    resultImage.src = imageUrl;
+                    downloadLink.href = imageUrl;
+                    downloadLink.download = `swapped_${Date.now()}.jpg`;
+                    result.style.display = 'block';
+                    loading.style.display = 'none';
+                }, 10000);
+
+            } catch (error) {
+                errorDiv.textContent = `Error: ${error.message}`;
+                loading.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
